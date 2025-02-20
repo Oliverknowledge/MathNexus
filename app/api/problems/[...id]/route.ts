@@ -6,10 +6,10 @@ import { connectToDB } from "@/lib/mongoose";
 
 
 connectToDB();
-export async function GET(req: Request, { params }: { params: Record<string, string>}) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
       
-      let {id}  = await params;
+      const id  = (await params).id
       
       console.log(id);
       if (!id) return NextResponse.json({ message: "Problem ID is required" }, { status: 400 });
