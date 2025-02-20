@@ -5,10 +5,10 @@ import Problem from "@/models/problemModels"; // Import the problem model
 import { connectToDB } from "@/lib/mongoose";
 
 
-connectToDB();
+
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-      
+      await connectToDB();
       const id  = (await params).id
       
       console.log(id);
