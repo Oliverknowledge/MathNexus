@@ -9,18 +9,25 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.7.4",
+    "@auth/prisma-adapter": "^2.7.4",
     "@hookform/resolvers": "^4.1.0",
+    "@prisma/client": "^6.4.1",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.2",
     "axios": "^1.7.9",
+    "bcryptjs": "^3.0.2",
+    "child_process": "^1.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "lucide-react": "^0.475.0",
-    "mongodb": "^6.13.0",
+    "mongodb": "^6.13.1",
     "mongoose": "^8.10.1",
     "motion": "^12.4.7",
+    "net": "^1.0.2",
     "next": "15.1.7",
+    "next-auth": "^5.0.0-beta.25",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
@@ -34,7 +41,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "postcss": "^8",
+    "prisma": "^6.4.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "browser": {
+    "child_process": false
   }
 }

@@ -21,6 +21,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import Loading from "@/components/loading";
 
  
 interface Problem {
@@ -79,9 +80,7 @@ export default function Page() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen text-gray-400">
-        <p>Loading problem...</p>
-      </div>
+      <Loading/>
     );
 
   if (!problem)

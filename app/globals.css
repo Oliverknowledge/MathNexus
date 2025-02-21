@@ -70,3 +70,7 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.modernButton{
+  @apply shadow-md transition-all duration-300 hover:scale-105 bg-white text-black hover:shadow-blue-600/50 hover:bg-gray-200;
+}
