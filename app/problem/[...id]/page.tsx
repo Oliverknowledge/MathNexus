@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import "katex/dist/katex.min.css";
 
@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import Loading from "@/components/loading";
+import { useSession } from "next-auth/react";
 
  
 interface Problem {
@@ -40,9 +41,11 @@ const inputSchema = z.object({
 export default function Page() {
   const { id } = useParams();
   const router = useRouter();
-
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
+  const { data: session } = useSession();
+  const [ solved, setSolved ] = useState<boolean>(false);
+  
   const [hintsShown, setHintsShown] = useState<number>(0);
   const [showSolution, setShowSolution] = useState(false);
   const [userAnswer, setUserAnswer] = useState<string>("");
@@ -59,25 +62,51 @@ export default function Page() {
     if (!problem) return setFeedback("Error: Problem not found.");
     if (data.answer == problem.answer) {
       setFeedback("✅ Correct! Well done.");
-    } else {
+
+    } else {  
       setFeedback("❌ Incorrect. Try again!");
     }
   }
   useEffect(() => {
-    if (!id) return;
-
+    
+   
+    if (session) {
+      fetch(`/api/problems/solved`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.solvedProblems.includes(id)) {
+            setSolved(true);
+          }
+        })
+        .catch((err) => console.error("Error checking solved problems:", err));
+    }
+  }, [ session]);
+  useEffect(() => {
     fetch(`/api/problems/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProblem(data);
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching problem:", error);
-        setLoading(false);
-      });
+  })
+      .catch((err) => console.error("Error fetching problem:", err));
+    
   }, [id]);
 
+  async function markAsSolved() {
+    await fetch(`/api/problems/solved/${id}`, 
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    }
+    )
+    .then((res) => res.json())
+
+    ;
+    setSolved(true);
+  }
   if (loading)
     return (
       <Loading/>
@@ -128,7 +157,17 @@ export default function Page() {
         transition={{ duration: 0.7 }}
       >
         <Latex>{problem.description || "No description available."}</Latex>
+
       </motion.div>
+      {session && (
+         <Button
+         onClick={markAsSolved}
+         className={`mt-4 px-4 py-2 rounded ${solved ? "bg-green-500" : "bg-blue-500"}`}
+         disabled={solved}
+       >
+         {solved ? "✅ Solved" : "Mark as Solved"}
+       </Button>
+      )}
 
       {/* Answer Input */}
       <div className="mt-6">

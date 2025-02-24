@@ -71,6 +71,10 @@ body {
   }
 }
 
-.modernButton{
+.modernButtonLight{
   @apply shadow-md transition-all duration-300 hover:scale-105 bg-white text-black hover:shadow-blue-600/50 hover:bg-gray-200;
+}
+.modernButtonDark{
+  @apply shadow-md transition-all duration-300 hover:scale-105 bg-gray-800 text-white hover:shadow-blue-600/50 hover:bg-gray-700;
+
 }

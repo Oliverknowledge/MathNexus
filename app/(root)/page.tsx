@@ -73,10 +73,10 @@ export default function Home() {
           Solve tough problems with step-by-step hints and solutions.
         </h3>
         <div className = "flex flex-col items-center space-y-6">
-          <Button onClick = {() => handleSubmit()} className = "mt-8 px-6 py-3 text-lg modernButton">Sign up with google</Button>
+          <Button onClick = {() => handleSubmit()} className = "mt-8 px-6 py-3 text-lg modernButtonLight hover:bg-gray-200">Sign up with google</Button>
           <Button
             onClick={() => router.push("/problems")}
-            className=""
+            variant = {"modernLight"}
 
           >
             Continue as guest

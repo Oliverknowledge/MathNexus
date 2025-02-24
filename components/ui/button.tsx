@@ -20,7 +20,9 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         friendly: "bg-yellow-500 text-yellow-900 shadow-sm hover:bg-yellow-400 active:bg-yellow-300",
-      },
+        modernDark: "shadow-md transition-all duration-300 hover:scale-105 bg-gray-800 text-white hover:shadow-blue-600/50 hover:bg-gray-700;",
+        modernLight: "shadow-md transition-all duration-300 hover:scale-105 bg-white text-black hover:shadow-blue-600/50 hover:bg-gray-200;"
+        },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",

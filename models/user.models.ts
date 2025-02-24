@@ -8,17 +8,12 @@ const userSchema = new mongoose.Schema({
         unique: true,
         
     },
-    password: {
-        type: String,
-        required: true,
-        
-        
-    },
     name: String,
-    profile_picture: {
+    image: {
         type: String,
         default: "/DefaultAvatar.png"
     },
+    solvedProblems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Problem' }],
     role: String,
 })
 

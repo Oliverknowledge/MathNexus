@@ -11,7 +11,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       await connectToDB();
       const id  = (await params).id
       
-      console.log(id);
+      
       if (!id) return NextResponse.json({ message: "Problem ID is required" }, { status: 400 });
   
       const problem = await Problem.findById(id);

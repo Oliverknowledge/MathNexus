@@ -6,14 +6,15 @@ const Loading = () => {
         <div className = "">
             <motion.div
               animate={{
-                scale: [1, 2, 2, 1, 1],
-                rotate: [0, 180, 0, 180, 0],
+                scale: [1, 2, 1, 2, 1],
+                rotate: [0, 180, 0, 60, 0],
                 borderRadius: ["0%", "0%", "50%", "50%", "0%"],
             }}
             transition={{
-                duration: 2,
+                duration: 2.5,
                 ease: "easeInOut",
-                times: [0, 0.2, 0.5, 0.8, 1],
+                times: [0, 0.4, 0.8, 1.1, 1.4],
+                
                 repeat: Infinity,
                 repeatDelay: 1,
             }}
