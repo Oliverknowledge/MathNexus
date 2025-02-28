@@ -18,9 +18,8 @@ const problemSchema = z.object({
   hints: z.string(),
   solution: z.string().min(10, "Solution is required"),
   answer: z.string().min(1, "Answer is required"),
-  difficulty: z.enum(["Easy", "Medium", "Hard"]),
-  year: z
-    .number()
+  difficulty: z.string(),
+  year: z.number()
     .int()
     .min(0)
     .max(new Date().getFullYear(), "Invalid year"),
@@ -31,7 +30,7 @@ export default function AddProblemPage() {
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
 
-  const {register,handleSubmit,formState: { errors },reset,} = useForm({
+  const {register,handleSubmit,formState: { errors }} = useForm({
     resolver: zodResolver(problemSchema),
     defaultValues: {
       title: "",
