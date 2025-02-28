@@ -29,6 +29,7 @@ export default function Home() {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen p-8 sm:p-20 text-center bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white overflow-hidden">
       <Spotlight />
+  
       {/* Floating Math Symbols */}
       <motion.div
         className="absolute top-10 left-20 text-blue-500 text-5xl opacity-20"
@@ -38,13 +39,14 @@ export default function Home() {
         ∑
       </motion.div>
 
-      <motion.div
+      <motion.button
         className="absolute bottom-16 right-16 text-purple-500 text-4xl opacity-20"
         animate={{ y: [0, 10, 0] }}
         transition={{ repeat: Infinity, duration: 3 }}
+        onClick = {() => router.push("/admin")}
       >
         π
-      </motion.div>
+      </motion.button>
       <motion.div
         className = "absolute top-[10%] right-[10%] text-yellow-500 text-4xl opacity-20"
         animate = {{rotate: [0, 20, -10, 0]}}

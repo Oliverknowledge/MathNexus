@@ -37,7 +37,10 @@ export async function POST(req: Request) {
       console.log("Problem already marked as solved");
         return NextResponse.json({ message: "Problem already marked as solved" }, { status: 200 });
     }
-
+    user.solvedProblems.push(idString); // Adds the problemID to the array
+    user.xp += 10; // +10XP
+    user.credits += 5; // +5 Credits
+    await user.save();
     return NextResponse.json({ message: "Problem marked as solved" }, { status: 200 });
   } catch (error) {
     console.log(error);

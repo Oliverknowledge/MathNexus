@@ -1,20 +1,14 @@
-import mongoose from "mongoose"; //Install mongoose
+import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-    id: String,
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        
-    },
-    name: String,
-    image: {
-        type: String,
-        default: "/DefaultAvatar.png"
-    },
-    solvedProblems: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Problem' }],
-    role: String,
-})
+const UserSchema = new mongoose.Schema({
+  email: { type: String, required: true, unique: true },
+  name: { type: String },
+  image: { type: String },
+  solvedProblems: [{ type: mongoose.Schema.Types.ObjectId, ref: "Problem" }],
+  xp: { type: Number, default: 0 }, // ✅ XP Points
+  credits: { type: Number, default: 0 }, // ✅ In-App Credits
+  password: { type: String },
+});
 
-export default mongoose.models.User || mongoose.model('User', userSchema)
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
+export default User;

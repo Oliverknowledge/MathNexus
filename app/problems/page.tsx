@@ -146,7 +146,7 @@ export default function ProblemsPage() {
                  <Button
           onClick={() => router.push(`/problem/${p._id}`)}
           className={`block p-6 h-[100%] rounded-lg transition shadow-lg w-[90%]  ${
-            solvedProblems.includes(p._id) ? "bg-green-500" : "bg-gray-800"
+            solvedProblems.includes(p._id) ? "bg-green-700 hover:bg-green-800" : "bg-gray-800"
           }`}
         >
           <h2 className="text-xl font-semibold">{p.title}</h2>

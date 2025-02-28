@@ -39,16 +39,17 @@ const inputSchema = z.object({
 
 })
 export default function Page() {
-  const { id } = useParams();
+  const { id } = useParams(); // Destructures the id from the URL 
   const router = useRouter();
   const [problem, setProblem] = useState<Problem | null>(null);
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
   const [ solved, setSolved ] = useState<boolean>(false);
-  
+  const [xp, setXp] = useState<number>(0);
+  const [credits, setCredits] = useState<number>(0);
   const [hintsShown, setHintsShown] = useState<number>(0);
   const [showSolution, setShowSolution] = useState(false);
-  const [userAnswer, setUserAnswer] = useState<string>("");
+  
   const [feedback, setFeedback] = useState<string | null>(null);
   const form = useForm<z.infer<typeof inputSchema>>({
     resolver: zodResolver(inputSchema),
@@ -57,20 +58,51 @@ export default function Page() {
     },
   })
  
-  function onSubmit(data: z.infer<typeof inputSchema>) {
-    console.log(data);
+  async function onSubmit(data: z.infer<typeof inputSchema>) {
+    
     if (!problem) return setFeedback("Error: Problem not found.");
-    if (data.answer == problem.answer) {
-      setFeedback("✅ Correct! Well done.");
-
-    } else {  
-      setFeedback("❌ Incorrect. Try again!");
-    }
+    const res = await fetch(`/api/problems/solved/${id}`, 
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      }
+      )
+      const responseData = await res.json();
+      
+      console.log("Response Data:", responseData);
+      if (responseData.message === "Problem already marked as solved") {
+        setFeedback("❌ Problem already marked as solved");
+        return;
+      }
+      if (data.answer == problem.answer) {
+        setFeedback("✅ Correct! Well done.");
+  
+      } else {  
+        setFeedback("❌ Incorrect. Try again!");
+      }
+      if (!session){
+        setFeedback("❌ You must be logged in to submit an answer.");
+        return;
+      }
+      setSolved(true);
+      setXp(responseData.xp);
+      setCredits(responseData.credits);
   }
   useEffect(() => {
-    
-   
     if (session) {
+      fetch(`/api/user/progress`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Fetched XP:", data.xp);
+          console.log("Fetched Credits:", data.credits);
+          setXp(data.xp);
+          setCredits(data.credits);
+        })
+        .catch((err) => console.error("Error fetching user progress:", err));
+  
       fetch(`/api/problems/solved`)
         .then((res) => res.json())
         .then((data) => {
@@ -80,7 +112,8 @@ export default function Page() {
         })
         .catch((err) => console.error("Error checking solved problems:", err));
     }
-  }, [ session]);
+  }, [session]); // ✅ Only fetch once on page load
+  
   useEffect(() => {
     fetch(`/api/problems/${id}`)
       .then((res) => res.json())
@@ -92,21 +125,7 @@ export default function Page() {
     
   }, [id]);
 
-  async function markAsSolved() {
-    await fetch(`/api/problems/solved/${id}`, 
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ id }),
-    }
-    )
-    .then((res) => res.json())
 
-    ;
-    setSolved(true);
-  }
   if (loading)
     return (
       <Loading/>
@@ -119,29 +138,27 @@ export default function Page() {
       </p>
     );
 
-  const handleSubmitAnswer = () => {
-    if (userAnswer == problem.answer) {
-      console.log(userAnswer, problem.answer);
-      setFeedback("✅ Correct! Well done.");
-    } else {
-      setFeedback("❌ Incorrect. Try again!");
-    }
-  };
-
+ 
   return (
-    <motion.div className = "w-screen mx-auto bg-gray-900 text-white">
-    <div className="max-w-7xl mx-auto p-8 min-h-screen bg-gray-900 text-white relative">
-      {/* Back Button */}
+    <motion.div className = "w-screen mx-auto bg-gray-900 text-white overflow-hidden">
+      {session && (
+        <div className="mt-4 absolute z-10 top-0 right-10  border-gray-200 border text-white p-3 rounded">
+          <p>XP: {xp} ⭐</p>
+          <p>Credits: {credits} 💰</p>
+        </div>
+      )}
       <Button
         onClick={() => router.push("/problems")}
-        className="absolute top-6 left-6 px-4 bg-gray-600 hover:bg-gray-700 py-2 rounded transition"
-      >
+        className="absolute top-6 left-6 z-10 px-4 bg-gray-600 hover:bg-gray-700 py-2 rounded transition"
+        >
         ⬅ Back
       </Button>
+    <div className="max-w-7xl  mx-auto p-8 min-h-screen bg-gray-900 text-white relative">
+      {/* Back Button */}
 
       {/* Problem Title */}
       <motion.h1
-        className="text-3xl font-bold text-center mb-6"
+        className="md:text-4xl lg:text-5xl text-3xl font-bold text-center mb-4 mt-16"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -159,16 +176,7 @@ export default function Page() {
         <Latex>{problem.description || "No description available."}</Latex>
 
       </motion.div>
-      {session && (
-         <Button
-         onClick={markAsSolved}
-         className={`mt-4 px-4 py-2 rounded ${solved ? "bg-green-500" : "bg-blue-500"}`}
-         disabled={solved}
-       >
-         {solved ? "✅ Solved" : "Mark as Solved"}
-       </Button>
-      )}
-
+     
       {/* Answer Input */}
       <div className="mt-6">
         
@@ -186,11 +194,11 @@ export default function Page() {
               <FormDescription>
                 Enter your answer
               </FormDescription>
-              <FormMessage />
+            <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" variant={"friendly"}>Submit</Button>
+        <Button type="submit" variant="secondary" >Submit</Button>
       </form>
     </Form>
         
@@ -208,7 +216,7 @@ export default function Page() {
           {problem.hints?.slice(0, hintsShown).map((hint, index) => (
             <motion.p
               key={index}
-              className="p-2 bg-blue-700 rounded mt-2 text-gray-200"
+              className="p-2 border border-gray-200 rounded mt-2 text-gray-200"
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
