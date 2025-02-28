@@ -21,7 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         connectToDB();
         await client.connect();
-        console.log(credentials.email);
+      
         const user = await User.findOne({ email: credentials?.email });
        
         if (!user) throw new Error("User not found");
@@ -47,11 +47,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: { async signIn({ user, account }) {
     await connectToDB();
-    console.log("🔐 Sign in callback");
+   
     const existingUser = await User.findOne({ email: user.email });
     if (!account) return false;
     if (!existingUser) {
-      console.log("🆕 Creating new user");
+    
       await User.create({
         email: user.email,
         name: user.name,
@@ -61,14 +61,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         credits: 0,
       });
     } else {
-      console.log(`🔗 Attempting to link ${account.provider} to existing user`);
+   
 
       // Check if the account already exists in NextAuth's "accounts" collection
       const Accounts = mongoose.connection.db!.collection("accounts");
       const existingAccount = await Accounts.findOne({ userId: existingUser._id });
       
       if (!existingAccount) {
-        console.log(`✅ No existing account found. Linking ${account.provider}`);
+       
 
         // Manually create the account entry in NextAuth's "accounts" collection
         await Accounts.insertOne({

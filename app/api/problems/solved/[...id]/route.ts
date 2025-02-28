@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const idString = id.toString();
 
     const session = await auth();
-    console.log("This is the session", session);
+    
     if (!session || !session.user) {
       console.log("Unauthorized");
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

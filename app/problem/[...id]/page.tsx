@@ -49,7 +49,7 @@ export default function Page() {
   const [credits, setCredits] = useState<number>(0);
   const [hintsShown, setHintsShown] = useState<number>(0);
   const [showSolution, setShowSolution] = useState(false);
-  
+  const hintCost = 5;
   const [feedback, setFeedback] = useState<string | null>(null);
   const form = useForm<z.infer<typeof inputSchema>>({
     resolver: zodResolver(inputSchema),
@@ -59,37 +59,52 @@ export default function Page() {
   })
  
   async function onSubmit(data: z.infer<typeof inputSchema>) {
-    
-    if (!problem) return setFeedback("Error: Problem not found.");
-    const res = await fetch(`/api/problems/solved/${id}`, 
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id }),
-      }
-      )
-      const responseData = await res.json();
-      
-      console.log("Response Data:", responseData);
-      if (responseData.message === "Problem already marked as solved") {
-        setFeedback("❌ Problem already marked as solved");
-        return;
-      }
-      if (data.answer == problem.answer) {
-        setFeedback("✅ Correct! Well done.");
+    if (!problem) {
+      setFeedback("Error: Problem not found.");
+      return;
+    }
   
-      } else {  
-        setFeedback("❌ Incorrect. Try again!");
-      }
-      if (!session){
-        setFeedback("❌ You must be logged in to submit an answer.");
-        return;
-      }
-      setSolved(true);
-      setXp(responseData.xp);
-      setCredits(responseData.credits);
+    if (!session) {
+      setFeedback("❌ You must be logged in to submit an answer.");
+      return;
+    }
+  
+    const res = await fetch(`/api/problems/solved/${id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id }),
+    });
+  
+    const responseData = await res.json();
+    console.log("Response Data:", responseData);
+  
+    // Handle case where problem is already solved
+    if (responseData.message === "Problem already marked as solved") {
+      setFeedback("❌ Problem already marked as solved");
+      return;
+    }
+  
+    // Check if the answer is correct
+    if (data.answer === problem.answer) {
+      setFeedback("✅ Correct! Well done.");
+    } else {
+      setFeedback("❌ Incorrect. Try again!");
+      return;
+    }
+  
+    // Fetch updated XP & Credits *after* submitting
+    fetch(`/api/user/progress`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Updated XP:", data.xp);
+        console.log("Updated Credits:", data.credits);
+        setXp(data.xp); // Ensure XP is updated correctly
+        setCredits(data.credits);
+        setSolved(true);
+      })
+      .catch((err) => console.error("Error fetching updated user progress:", err));
   }
   useEffect(() => {
     if (session) {

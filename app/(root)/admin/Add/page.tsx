@@ -42,8 +42,8 @@ export default function AddProblemPage() {
       year: new Date().getFullYear(),
     },
   });
-
-  if (!session) {
+ 
+  if (!session || session.user!.email != "admin123@OlympiSolve.com") {
     return (
       <div className="flex justify-center  items-center h-screen text-white bg-gray-900">
         <p className="text-red-400 text-lg">🚫 Not an authorized route</p>
